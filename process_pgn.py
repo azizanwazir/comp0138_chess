@@ -36,7 +36,6 @@ def db_to_csv(filename):
             invalid += 1
             continue
 
-        #TODO: (DONE) Check for errors, remove entries with blank fields
         game_list = []
         sys.stdout.write("\r Current ID: {0}/{1} | Invalid: {2}".format(i+1,game_count, invalid))
         sys.stdout.flush()
@@ -241,7 +240,6 @@ def get_node_count_csv(csv_filename, json_filename):
     end = time.time()
     time_format(start,end, get_node_count_csv.__name__)
 
-
 # db_to_csv('test_db.pgn')
 # db_to_csv('test_db.pgn')
 # get_node_dict_csv('test_db.csv')
@@ -281,8 +279,6 @@ def get_node_count_csv(csv_filename, json_filename):
 # selected_nodes_only(['lichess_db_standard_rated_2014-10.csv','lichess_db_standard_rated_2014-11.csv','lichess_db_standard_rated_2014-12.csv'], 'lichess_db_standard_rated_2014-12_nodes.txt')
 
 # year_list = ['lichess_db_standard_rated_2014-01.csv', 'lichess_db_standard_rated_2014-02.csv', 'lichess_db_standard_rated_2014-03.csv', 'lichess_db_standard_rated_2014-04.csv', 'lichess_db_standard_rated_2014-05.csv', 'lichess_db_standard_rated_2014-06.csv', 'lichess_db_standard_rated_2014-07.csv', 'lichess_db_standard_rated_2014-08.csv', 'lichess_db_standard_rated_2014-09.csv', 'lichess_db_standard_rated_2014-10.csv', 'lichess_db_standard_rated_2014-11.csv', 'lichess_db_standard_rated_2014-12.csv']
-year_list = ['lichess_db_standard_rated_2014-04.csv', 'lichess_db_standard_rated_2014-05.csv', 'lichess_db_standard_rated_2014-06.csv']
+# year_list = ['lichess_db_standard_rated_2014-04.csv', 'lichess_db_standard_rated_2014-05.csv', 'lichess_db_standard_rated_2014-06.csv']
 # year_list = ['lichess_db_standard_rated_2014-07.csv', 'lichess_db_standard_rated_2014-08.csv', 'lichess_db_standard_rated_2014-09.csv']
 # year_list = ['lichess_db_standard_rated_2014-10.csv', 'lichess_db_standard_rated_2014-11.csv', 'lichess_db_standard_rated_2014-12.csv']
-
-selected_nodes_only(year_list, 'lichess_db_standard_rated_2014-12_nodes_zeros.txt')

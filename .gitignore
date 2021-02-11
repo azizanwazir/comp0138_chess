@@ -5,6 +5,9 @@ fidebase/
 nodelists/
 pgn/
 
+# Files to ignore
+*.code-workspace
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
