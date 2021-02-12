@@ -21,7 +21,11 @@ def db_to_csv(filename):
     pgn = open(pgn_path, encoding='utf-8-sig')
 
     # Initialise headers
-    row_list = [['id','date','time','event', 'white_id','black_id','result','white_elo','white_elo_diff','black_elo','black_elo_diff','eco','time_control', 'termination','moves']]
+    # Abridged list of headers, only those used in processing
+    row_list = [['id','date','white_id','black_id','result','white_elo','white_elo_diff','black_elo','black_elo_diff']]
+    
+    # Includes unused headers 
+    # row_list = [['id','date','time','event', 'white_id','black_id','result','white_elo','white_elo_diff','black_elo','black_elo_diff','eco','time_control', 'termination','moves']]
     
     game_id = 1
     invalid = 0
@@ -42,8 +46,8 @@ def db_to_csv(filename):
         
         try:
             game_date       = game.headers['UTCDate']
-            game_time       = game.headers['UTCTime']
-            game_event      = game.headers['Event']
+            # game_time       = game.headers['UTCTime']
+            # game_event      = game.headers['Event']
             game_white      = game.headers['White']
             game_black      = game.headers['Black']
             game_result     = game.headers['Result']
@@ -51,10 +55,10 @@ def db_to_csv(filename):
             game_white_diff = game.headers['WhiteRatingDiff']
             game_black_elo  = game.headers['BlackElo']
             game_black_diff = game.headers['BlackRatingDiff']
-            game_eco        = game.headers['ECO']
-            game_t_control  = game.headers['TimeControl']
-            game_term       = game.headers['Termination']
-            board           = str(game.variations[0])
+            # game_eco        = game.headers['ECO']
+            # game_t_control  = game.headers['TimeControl']
+            # game_term       = game.headers['Termination']
+            # board           = str(game.variations[0])
         except KeyError:
             invalid += 1
             continue
@@ -70,8 +74,8 @@ def db_to_csv(filename):
 
         game_list.append(game_id)
         game_list.append(game_date)   
-        game_list.append(game_time)
-        game_list.append(game_event)
+        # game_list.append(game_time)
+        # game_list.append(game_event)
         game_list.append(game_white)
         game_list.append(game_black)
         game_list.append(game_result)
@@ -79,10 +83,10 @@ def db_to_csv(filename):
         game_list.append(game_white_diff)
         game_list.append(game_black_elo)
         game_list.append(game_black_diff)
-        game_list.append(game_eco)
-        game_list.append(game_t_control)
-        game_list.append(game_term)
-        game_list.append(board)
+        # game_list.append(game_eco)
+        # game_list.append(game_t_control)
+        # game_list.append(game_term)
+        # game_list.append(board)
         game_id += 1
         row_list.append(game_list)
 
@@ -130,8 +134,11 @@ def selected_nodes_only(csv_filename_list, json_filename):
         new_csv_path = get_path_file(new_csv_name, 'csv')
 
         with open(new_csv_path, "w", newline="") as f:
-            # writer = csv.DictWriter(f, ['id','date','event', 'white_id','black_id','result','white_elo','white_elo_diff','black_elo','black_elo_diff','eco'])
-            writer = csv.DictWriter(f, ['id','date','time','event', 'white_id','black_id','result','white_elo','white_elo_diff','black_elo','black_elo_diff','eco','time_control', 'termination','moves'])
+            # Abridged list of headers
+            writer = csv.DictWriter(f, ['id','date', 'white_id','black_id','result','white_elo','white_elo_diff','black_elo','black_elo_diff'])
+            
+            # Full list of headers
+            # writer = csv.DictWriter(f, ['id','date','time','event', 'white_id','black_id','result','white_elo','white_elo_diff','black_elo','black_elo_diff','eco','time_control', 'termination','moves'])
 
             writer.writeheader()
             writer.writerows(row_list)
