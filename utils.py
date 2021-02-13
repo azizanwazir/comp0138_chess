@@ -122,6 +122,83 @@ def get_csv_game_count_dict(year):
 
     return game_count_dict
 
+def get_date_id_dict(csv_filename):
+    # Input format: "yyyy-mm"
+    # Output format: {'dd':n}, where dd = date, n = id for the month
+    date = get_lichess_db_date(csv_filename)
+    day_count_dict = {'01': 31, '02': 28, '03': 31, '04': 30, '05': 31, '06': 30, '07': 31, '08': 31, '09': 30, '10': 31, '11': 30, '12': 31}
+    y, m = date.split("-")
+
+    day_count = day_count_dict[m] + 1
+    date_dict = dict()
+    if(m == '01'): # Month is January
+        prev_y = str(int(y) - 1)
+        prev_y_date = '.'.join([prev_y, '12','31'])
+        date_dict[prev_y_date] = 0
+        for i in range(1,day_count):
+            i_str = str(i)
+            if(i < 10):
+                i_str = "0" + str(i)
+            add_date = '.'.join([y,m,i_str])
+            date_dict[add_date] = i
+        return day_count, date_dict
+
+    if(y == '2016' and m == '02'): # leap year
+        prev_date = '2016.01.31'
+        date_dict[prev_date] = 0
+        for i in range(1, 29):
+            i_str = str(i)
+            if(i < 10):
+                i_str = "0" + str(i)
+            add_date = '.'.join([y,m,i_str])
+            date_dict[add_date] = i
+        return day_count, date_dict
+    
+    prev_m = int(m) - 1
+    if(prev_m < 10):
+        prev_m = "0" + str(prev_m)
+    else:
+        prev_m = str(prev_m)
+
+    prev_date = '.'.join([y,prev_m, str(day_count_dict[prev_m])])
+    date_dict[prev_date] = 0
+    
+    for i in range(1, day_count):
+        i_str = str(i)
+        if(i < 10):
+            i_str = "0" + str(i)
+        add_date = '.'.join([y,m,i_str])
+        date_dict[add_date] = i
+    return day_count, date_dict
+
+def avg_time_between_sessions_f(game_ls):
+    # Find total number of zeros in the list (days on which player played no games: days of inactivity) and divide by number of periods of inactivity (consecutive days of inactivity)
+    # i.e. [0, 1, 1, 0, 0, 1, 1, 0] --> 4 days of inactivity, 3 periods of activity
+    # return 4/3 = 1.34 days between sessions on average
+
+    # TODO: Ignore leading and trailing zeros
+    # i.e. [0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0] gives average 0 days between sessions instead of 4 (8 inactive days/2 inactive periods)
+    
+    inactive_days = 0
+    inactive_periods = 0
+    active_periods = 0
+    for d in range(0, len(game_ls)):
+        if(d == len(game_ls) - 1):
+            if(game_ls[d] == 0):
+                inactive_days += 1
+                inactive_periods += 1
+        else:
+            if(game_ls[d] == 0):
+                inactive_days += 1
+                if(game_ls[d+1] != 0):
+                    inactive_periods += 1
+                else:
+                    active_periods += 1
+            
+    if(inactive_periods == 0):
+        return 0
+    else:
+        return inactive_days/inactive_periods
 
 
 ''' CSV headers for Lichess files '''
@@ -216,3 +293,27 @@ def get_node_dict(filename):
     end = time.time()
     time_format(start,end, get_node_dict.__name__)
     
+# https://stackoverflow.com/questions/55771644/max-consecutive-ones
+def findMaxStreaks(nums):
+    slow, fast, glo_max, loc_max = 0, 0, 0, 0
+    while fast < len(nums):
+        if nums[fast] == 0 or nums[fast] == -1:
+            loc_max = fast - slow  
+            glo_max = max(glo_max, loc_max)
+            slow = fast + 1      # need to add one more because we haven't incremented fast yet
+
+        fast += 1
+    loc_max = fast - slow        # end check for cases that end with 1
+    max_win_streak = max(loc_max, glo_max)
+
+    slow, fast, glo_max, loc_max = 0, 0, 0, 0
+    while fast < len(nums):
+        if nums[fast] == 0 or nums[fast] == 1:
+            loc_max = fast - slow  
+            glo_max = max(glo_max, loc_max)
+            slow = fast + 1      # need to add one more because we haven't incremented fast yet
+
+        fast += 1
+    loc_max = fast - slow        # end check for cases that end with 1
+    max_lose_streak = max(loc_max, glo_max)
+    return max_win_streak, max_lose_streak
