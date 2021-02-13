@@ -7,15 +7,15 @@ import time
 from utils import * 
 
 # Convert PGN files to CSV
-def db_to_csv(filename):
+def ConvertPGNtoCSV(filename):
     start = time.time()
     sys.stdout.write("\r \n######################################\nConverting {0} from PGN to CSV\n--------------------------------------\n".format(filename))
 
     # Get file path
     csv_name = filename[:-4] + ".csv"
 
-    pgn_path = get_path_file(filename, "pgn")
-    csv_path = get_path_file(csv_name, "csv")
+    pgn_path = getFilePath(filename, "pgn")
+    csv_path = getFilePath(csv_name, "csv")
 
     # Open PGN file 
     pgn = open(pgn_path, encoding='utf-8-sig')
@@ -29,7 +29,7 @@ def db_to_csv(filename):
     
     game_id = 1
     invalid = 0
-    game_count = get_game_count(filename)
+    game_count = getGameCount(filename)
     for i in range(0,game_count): #TODO: iterate over all games
         try:
             game = chess.pgn.read_game(pgn)
@@ -97,10 +97,10 @@ def db_to_csv(filename):
     sys.stdout.write("\r \n-------------------------------------- \n{0} Converted to {1} \n######################################".format(filename, csv_name))
 
     end = time.time()
-    time_format(start, end, db_to_csv.__name__)
+    timeFormat(start, end, ConvertPGNtoCSV.__name__)
 
 # Obtain games that only contain player ids from a predefined dictionary
-def selected_nodes_only(csv_filename_list, json_filename):
+def SelectedNodesOnly(csv_filename_list, json_filename):
     # List of all relevant elements
     start = time.time()
     # dir_path = os.path.dirname(os.path.realpath(__file__))
@@ -110,10 +110,10 @@ def selected_nodes_only(csv_filename_list, json_filename):
         row_list = []
         csv_list = []
         removed = 0
-        csv_path = get_path_file(csv_filename, 'csv')
-        node_dict = retrieve_nodes(get_path_file(json_filename, 'nodelists'))
-        game_count = get_game_count(csv_filename)
-        csv_list.append(get_lichess_db_date(csv_filename))
+        csv_path = getFilePath(csv_filename, 'csv')
+        node_dict = retrieveNodes(getFilePath(json_filename, 'nodelists'))
+        game_count = getGameCount(csv_filename)
+        csv_list.append(getLichessDBDate(csv_filename))
         
         with open(csv_path, mode='r') as csv_file:
             csv_reader = csv.DictReader(csv_file, delimiter=',')
@@ -128,10 +128,10 @@ def selected_nodes_only(csv_filename_list, json_filename):
                 sys.stdout.write("\r Added: {0}, Removed: {1}, Remaining: {2}>".format(len(row_list),removed, game_count - i))
                 sys.stdout.flush()
                 i += 1
-        sys.stdout.write("\r Added: {0}, Removed: {1}/{2} from {3}>".format(len(row_list),removed, game_count - i, get_lichess_db_date(csv_filename)))
+        sys.stdout.write("\r Added: {0}, Removed: {1}/{2} from {3}>".format(len(row_list),removed, game_count - i, getLichessDBDate(csv_filename)))
 
         new_csv_name = csv_filename[:-4] + "_cut.csv"
-        new_csv_path = get_path_file(new_csv_name, 'csv')
+        new_csv_path = getFilePath(new_csv_name, 'csv')
 
         with open(new_csv_path, "w", newline="") as f:
             # Abridged list of headers
@@ -153,10 +153,10 @@ def selected_nodes_only(csv_filename_list, json_filename):
 
     sys.stdout.write("\n\n\r {0} rows deleted from an original count of {1}. {2} rows remaining.".format(total_removed,total_game_count, total_game_count - total_removed))
     end = time.time()
-    time_format(start, end, selected_nodes_only.__name__)
+    timeFormat(start, end, SelectedNodesOnly.__name__)
 
 # Obtain a dictionary of unique nodes in a CSV file
-def get_node_dict_csv(csv_filename):
+def getNodeDict(csv_filename):
     '''Used to obtain a dictionary of all the nodes in a PGN file and '''
     start = time.time()
     node_dict = {}
@@ -165,13 +165,13 @@ def get_node_dict_csv(csv_filename):
     csv_folder = 'csv'
     txt_folder = 'nodelists'
     txt_filename = csv_filename[:-4] + '_cut.txt'
-    csv_path = get_path_file(csv_filename, csv_folder)
-    txt_path = get_path_file(txt_filename, txt_folder)
+    csv_path = getFilePath(csv_filename, csv_folder)
+    txt_path = getFilePath(txt_filename, txt_folder)
 
     # dir_path = os.path.dirname(os.path.realpath(__file__))
     # csv_path = dir_path + '\\' + csv_filename
     # txt_path = csv_path[:-4] + '_nodes.txt'
-    # game_count = get_game_count(csv_filename)
+    # game_count = getGameCount(csv_filename)
 
     i = 0
     with open(csv_path, mode='r') as csv_file:
@@ -194,10 +194,10 @@ def get_node_dict_csv(csv_filename):
     with open(txt_path,'w') as file:
         file.write(json.dumps(node_dict))
     end = time.time()
-    time_format(start,end, get_node_dict_csv.__name__)
+    timeFormat(start,end, getNodeDict.__name__)
 
 # Obtain the number of games each player has played and removes players with no games played for the month
-def get_node_count_csv(csv_filename, json_filename):
+def getNodeCount(csv_filename, json_filename):
     '''Iterates through the nodes in csv_filename, checks each game for 
     white_id and black_id to see if they are in node_dict (json_filename)
     and adds one to their respective dictionary entry if they are present.
@@ -212,12 +212,12 @@ def get_node_count_csv(csv_filename, json_filename):
     csv_folder = 'csv'
     json_folder = 'nodelists'
     # txt_filename = csv_filename[:-4] + '.txt'
-    csv_path = get_path_file(csv_filename, csv_folder)
-    # txt_path = get_path_file(txt_filename, json_folder)
-    json_path = get_path_file(json_filename, json_folder)
-    set_zero(json_path)
-    node_dict = retrieve_nodes(json_path)
-    game_count = get_game_count(csv_filename)
+    csv_path = getFilePath(csv_filename, csv_folder)
+    # txt_path = getFilePath(txt_filename, json_folder)
+    json_path = getFilePath(json_filename, json_folder)
+    setZero(json_path)
+    node_dict = retrieveNodes(json_path)
+    game_count = getGameCount(csv_filename)
 
     with open(csv_path, mode='r') as csv_file:
         csv_reader = csv.DictReader(csv_file, delimiter=',')
@@ -245,45 +245,45 @@ def get_node_count_csv(csv_filename, json_filename):
     with open(json_path,'w') as file:
         file.write(json.dumps(node_dict))
     end = time.time()
-    time_format(start,end, get_node_count_csv.__name__)
+    timeFormat(start,end, getNodeCount.__name__)
 
-# db_to_csv('test_db.pgn')
-# db_to_csv('test_db.pgn')
-# get_node_dict_csv('test_db.csv')
+# ConvertPGNtoCSV('test_db.pgn')
+# ConvertPGNtoCSV('test_db.pgn')
+# getNodeDict('test_db.csv')
 
-# db_to_csv('lichess_db_standard_rated_2014-01.pgn')
-# db_to_csv('lichess_db_standard_rated_2014-02.pgn')
-# db_to_csv('lichess_db_standard_rated_2014-03.pgn')
-# db_to_csv('lichess_db_standard_rated_2014-04.pgn')
-# db_to_csv('lichess_db_standard_rated_2014-05.pgn')
-# db_to_csv('lichess_db_standard_rated_2014-06.pgn')
-# db_to_csv('lichess_db_standard_rated_2014-07.pgn')
-# db_to_csv('lichess_db_standard_rated_2014-08.pgn')
-# db_to_csv('lichess_db_standard_rated_2014-09.pgn')
-# db_to_csv('lichess_db_standard_rated_2014-10.pgn')
-# db_to_csv('lichess_db_standard_rated_2014-11.pgn')
-# db_to_csv('lichess_db_standard_rated_2014-12.pgn')
+# ConvertPGNtoCSV('lichess_db_standard_rated_2014-01.pgn')
+# ConvertPGNtoCSV('lichess_db_standard_rated_2014-02.pgn')
+# ConvertPGNtoCSV('lichess_db_standard_rated_2014-03.pgn')
+# ConvertPGNtoCSV('lichess_db_standard_rated_2014-04.pgn')
+# ConvertPGNtoCSV('lichess_db_standard_rated_2014-05.pgn')
+# ConvertPGNtoCSV('lichess_db_standard_rated_2014-06.pgn')
+# ConvertPGNtoCSV('lichess_db_standard_rated_2014-07.pgn')
+# ConvertPGNtoCSV('lichess_db_standard_rated_2014-08.pgn')
+# ConvertPGNtoCSV('lichess_db_standard_rated_2014-09.pgn')
+# ConvertPGNtoCSV('lichess_db_standard_rated_2014-10.pgn')
+# ConvertPGNtoCSV('lichess_db_standard_rated_2014-11.pgn')
+# ConvertPGNtoCSV('lichess_db_standard_rated_2014-12.pgn')
 
-# get_node_count_csv('lichess_db_standard_rated_2014-01.csv', 'lichess_db_standard_rated_2014-12_nodes_zeros.txt')
-# get_node_count_csv('lichess_db_standard_rated_2014-02.csv', 'lichess_db_standard_rated_2014-12_nodes_zeros.txt')
-# get_node_count_csv('lichess_db_standard_rated_2014-03.csv', 'lichess_db_standard_rated_2014-12_nodes_zeros.txt')
-# get_node_count_csv('lichess_db_standard_rated_2014-04.csv', 'lichess_db_standard_rated_2014-12_nodes_zeros.txt')
-# get_node_count_csv('lichess_db_standard_rated_2014-05.csv', 'lichess_db_standard_rated_2014-12_nodes_zeros.txt')
-# get_node_count_csv('lichess_db_standard_rated_2014-06.csv', 'lichess_db_standard_rated_2014-12_nodes_zeros.txt')
-# get_node_count_csv('lichess_db_standard_rated_2014-07.csv', 'lichess_db_standard_rated_2014-12_nodes_zeros.txt')
-# get_node_count_csv('lichess_db_standard_rated_2014-08.csv', 'lichess_db_standard_rated_2014-12_nodes_zeros.txt')
-# get_node_count_csv('lichess_db_standard_rated_2014-09.csv', 'lichess_db_standard_rated_2014-12_nodes_zeros.txt')
-# get_node_count_csv('lichess_db_standard_rated_2014-10.csv', 'lichess_db_standard_rated_2014-12_nodes_zeros.txt')
-# get_node_count_csv('lichess_db_standard_rated_2014-11.csv', 'lichess_db_standard_rated_2014-12_nodes_zeros.txt')
-# get_node_count_csv('lichess_db_standard_rated_2014-12.csv', 'lichess_db_standard_rated_2014-12_nodes_zeros.txt')
+# getNodeCount('lichess_db_standard_rated_2014-01.csv', 'lichess_db_standard_rated_2014-12_nodes_zeros.txt')
+# getNodeCount('lichess_db_standard_rated_2014-02.csv', 'lichess_db_standard_rated_2014-12_nodes_zeros.txt')
+# getNodeCount('lichess_db_standard_rated_2014-03.csv', 'lichess_db_standard_rated_2014-12_nodes_zeros.txt')
+# getNodeCount('lichess_db_standard_rated_2014-04.csv', 'lichess_db_standard_rated_2014-12_nodes_zeros.txt')
+# getNodeCount('lichess_db_standard_rated_2014-05.csv', 'lichess_db_standard_rated_2014-12_nodes_zeros.txt')
+# getNodeCount('lichess_db_standard_rated_2014-06.csv', 'lichess_db_standard_rated_2014-12_nodes_zeros.txt')
+# getNodeCount('lichess_db_standard_rated_2014-07.csv', 'lichess_db_standard_rated_2014-12_nodes_zeros.txt')
+# getNodeCount('lichess_db_standard_rated_2014-08.csv', 'lichess_db_standard_rated_2014-12_nodes_zeros.txt')
+# getNodeCount('lichess_db_standard_rated_2014-09.csv', 'lichess_db_standard_rated_2014-12_nodes_zeros.txt')
+# getNodeCount('lichess_db_standard_rated_2014-10.csv', 'lichess_db_standard_rated_2014-12_nodes_zeros.txt')
+# getNodeCount('lichess_db_standard_rated_2014-11.csv', 'lichess_db_standard_rated_2014-12_nodes_zeros.txt')
+# getNodeCount('lichess_db_standard_rated_2014-12.csv', 'lichess_db_standard_rated_2014-12_nodes_zeros.txt')
 
-# get_node_count_csv('test_db.csv', 'lichess_db_standard_rated_2014-12_nodes.txt')
+# getNodeCount('test_db.csv', 'lichess_db_standard_rated_2014-12_nodes.txt')
 
-# set_zero_new(get_path_file('lichess_db_standard_rated_2014-12_nodes.txt', 'nodelists'))
+# setZeroNew(getFilePath('lichess_db_standard_rated_2014-12_nodes.txt', 'nodelists'))
 
-# selected_nodes_only(['lichess_db_standard_rated_2014-04.csv','lichess_db_standard_rated_2014-05.csv','lichess_db_standard_rated_2014-06.csv'], 'lichess_db_standard_rated_2014-12_nodes.txt')
-# selected_nodes_only(['lichess_db_standard_rated_2014-07.csv','lichess_db_standard_rated_2014-08.csv','lichess_db_standard_rated_2014-09.csv'], 'lichess_db_standard_rated_2014-12_nodes.txt')
-# selected_nodes_only(['lichess_db_standard_rated_2014-10.csv','lichess_db_standard_rated_2014-11.csv','lichess_db_standard_rated_2014-12.csv'], 'lichess_db_standard_rated_2014-12_nodes.txt')
+# SelectedNodesOnly(['lichess_db_standard_rated_2014-04.csv','lichess_db_standard_rated_2014-05.csv','lichess_db_standard_rated_2014-06.csv'], 'lichess_db_standard_rated_2014-12_nodes.txt')
+# SelectedNodesOnly(['lichess_db_standard_rated_2014-07.csv','lichess_db_standard_rated_2014-08.csv','lichess_db_standard_rated_2014-09.csv'], 'lichess_db_standard_rated_2014-12_nodes.txt')
+# SelectedNodesOnly(['lichess_db_standard_rated_2014-10.csv','lichess_db_standard_rated_2014-11.csv','lichess_db_standard_rated_2014-12.csv'], 'lichess_db_standard_rated_2014-12_nodes.txt')
 
 # year_list = ['lichess_db_standard_rated_2014-01.csv', 'lichess_db_standard_rated_2014-02.csv', 'lichess_db_standard_rated_2014-03.csv', 'lichess_db_standard_rated_2014-04.csv', 'lichess_db_standard_rated_2014-05.csv', 'lichess_db_standard_rated_2014-06.csv', 'lichess_db_standard_rated_2014-07.csv', 'lichess_db_standard_rated_2014-08.csv', 'lichess_db_standard_rated_2014-09.csv', 'lichess_db_standard_rated_2014-10.csv', 'lichess_db_standard_rated_2014-11.csv', 'lichess_db_standard_rated_2014-12.csv']
 # year_list = ['lichess_db_standard_rated_2014-04.csv', 'lichess_db_standard_rated_2014-05.csv', 'lichess_db_standard_rated_2014-06.csv']

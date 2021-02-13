@@ -8,7 +8,7 @@ import time
 class DirectoryNotFound(Exception):
     pass
 
-def get_path_folder(folder=""):
+def getFolderPath(folder=""):
     dir_path = os.path.dirname(os.path.realpath(__file__))
     if(folder == ""):
         # Return base directory
@@ -20,25 +20,25 @@ def get_path_folder(folder=""):
         else:
             raise DirectoryNotFound
 
-def get_path_file(filename, folder):
+def getFilePath(filename, folder):
     file_extension = filename.split(".")
     file_extension = file_extension[-1:]
-    folder_path = get_path_folder(folder)
+    folder_path = getFolderPath(folder)
     file_path = folder_path + '\\' + filename
     return file_path
 
-def time_format(start,end, f_name):
+def timeFormat(start,end, f_name):
     diff = end - start
     h = diff // 3600
     m = (diff - h*3600) // 60
     s = round((diff - h*3600 - m*60),4)
     sys.stdout.write("\n\nFunction: {0}\nTime Elapsed: {1}h {2}m {3}s\n".format(f_name,h,m,s))
 
-def set_zero_new(json_path):
+def setZeroNew(json_path):
     ''' Sets all values in a JSON dictionary to 0 and creates a new file
     filename_zeros.txt '''
     start = time.time()
-    node_dict = retrieve_nodes(json_path)
+    node_dict = retrieveNodes(json_path)
     new_file_path = json_path[:-4] + '_zeros.txt'
     for key in node_dict:
         node_dict[key] = 0
@@ -46,28 +46,34 @@ def set_zero_new(json_path):
     with open(new_file_path,'w') as file:
         file.write(json.dumps(node_dict))
     end = time.time()
-    time_format(start,end, set_zero.__name__)
+    timeFormat(start,end, setZero.__name__)
 
-def set_zero(json_path):
+def setZero(json_path):
     ''' Sets all values in a JSON dictionary to 0 and overwrites old file'''
     start = time.time()
-    node_dict = retrieve_nodes(json_path)
+    node_dict = retrieveNodes(json_path)
     for key in node_dict:
         node_dict[key] = 0
     
     with open(json_path,'w') as file:
         file.write(json.dumps(node_dict))
     end = time.time()
-    time_format(start,end, set_zero.__name__)
+    timeFormat(start,end, setZero.__name__)
 
-def retrieve_nodes(json_path):
+def retrieveNodes(json_path):
     # JSON to python dictionary conversion
     # Input: JSON file path
     with open(json_path) as json_file:
         nodes_dict = json.load(json_file)
     return nodes_dict
 
-def get_game_count(filepath):
+def getLichessDBDate(filename):
+    if(filename[:26] == 'lichess_db_standard_rated_'):
+        return filename [26:][:7]
+    elif(filename == 'test_db.csv'):
+        return '2010-01'
+
+def getGameCount(filepath):
     ''' Returns the game count for each month based on the figures on database.lichess.org
     Input: Original file name of the PGN files downloaded from the website (in the form: lichess_db_standard_rated_201x_mm.pgn)''' 
     if(filepath[:-4] == 'test_db'):
@@ -84,48 +90,10 @@ def get_game_count(filepath):
     elif(filepath[-4:] == '.csv'):
         return game_count_dict_csv[file_date]
 
-def get_lichess_db_date(filename):
-    if(filename[:26] == 'lichess_db_standard_rated_'):
-        return filename [26:][:7]
-    elif(filename == 'test_db.csv'):
-        return '2010-01'
-
-def get_game_count_csv(csv_filename):
-    ''' Returns the game count extracted into the CSV file (without incomplete games)
-    Input: File name of the CSV files processed from datasheets from the website (in the form: lichess_db_standard_rated_201x_mm.csv)''' 
-    if(csv_filename == 'test_db.csv'):
-        return 167
-    elif(csv_filename == 'test_db_cut.csv'):
-        return 139
-    csv_date = get_lichess_db_date(csv_filename)
-    game_count_dict_csv = {'2014-01': 691521, '2014-02': 686454, '2014-03': 785091, '2014-04': 799875, '2014-05': 902538, '2014-06': 961247, '2014-07': 1047989, '2014-08': 1012399, '2014-09': 999326, '2014-10': 1110572, '2014-11': 1206909, '2014-12': 1323444}
-    return game_count_dict_csv[csv_date]
-
-def get_csv_length(csv_filename):
-    ''' Returns number of rows in a csv file
-    Input: File name of CSV file'''
-    file = open(csv_filename)
-    reader = csv.reader(file)
-    lines = len(list(reader))
-
-    return lines
-
-def get_csv_game_count_dict(year):
-    def_string = "lichess_db_standard_rated_"
-    game_count_dict = {}
-    for i in ['01','02','03','04','05','06','07','08','09','10','11','12']:
-        file_name = str(year) + '-' + i + '.csv'
-        full_file_name = def_string + file_name
-        file = open(full_file_name)
-        reader = csv.reader(file)
-        game_count_dict[file_name[:-4]] = len(list(reader))
-
-    return game_count_dict
-
-def get_date_id_dict(csv_filename):
+def getDateIDDict(csv_filename):
     # Input format: "yyyy-mm"
     # Output format: {'dd':n}, where dd = date, n = id for the month
-    date = get_lichess_db_date(csv_filename)
+    date = getLichessDBDate(csv_filename)
     day_count_dict = {'01': 31, '02': 28, '03': 31, '04': 30, '05': 31, '06': 30, '07': 31, '08': 31, '09': 30, '10': 31, '11': 30, '12': 31}
     y, m = date.split("-")
 
@@ -171,7 +139,7 @@ def get_date_id_dict(csv_filename):
         date_dict[add_date] = i
     return day_count, date_dict
 
-def avg_time_between_sessions_f(game_ls):
+def averageTimeBetweenSessions(game_ls):
     # Find total number of zeros in the list (days on which player played no games: days of inactivity) and divide by number of periods of inactivity (consecutive days of inactivity)
     # i.e. [0, 1, 1, 0, 0, 1, 1, 0] --> 4 days of inactivity, 3 periods of activity
     # return 4/3 = 1.34 days between sessions on average
@@ -200,99 +168,6 @@ def avg_time_between_sessions_f(game_ls):
     else:
         return inactive_days/inactive_periods
 
-
-''' CSV headers for Lichess files '''
-# csv_headers = ['id',
-#                'date',
-#                'event', 
-#                'white_id',
-#                'black_id',
-#                'result',
-#                'white_elo',
-#                'white_elo_diff',
-#                'black_elo',
-#                'black_elo_diff',
-#                'eco'
-#                ]
-
-
-# Don't use these two function. They were originally written to extract data from PGN files
-# but processing CSV files is much, much faster
-def get_node_count(pgn_filename, json_filename):
-    '''Iterates through the nodes in pgn_filename, checks each game for 
-    white_id and black_id to see if they are in node_dict (json_filename)
-    and adds one to their respective dictionary entry if they are present.
-    Ignores otherwise. Finally, removes any elements in the dictionary
-    which have a count of zero
-
-    Input: name of PGN and JSON files with their extensions and the number of games
-    in the PGN file (from Lichess.org)'''
-    start = time.time()
-    dir_path = os.path.dirname(os.path.realpath(__file__))
-    pgn_path = dir_path + '\\' + pgn_filename
-    pgn_name = pgn_filename[26:][:7]
-    json_path = dir_path + '\\' + json_filename[:-4] + '_' + pgn_name +'.txt'
-    node_dict = retrieve_nodes(json_filename)
-    game_count = get_game_count(pgn_filename)
-    pgn = open(pgn_path, encoding='utf-8-sig')
-
-    for i in range(0,game_count):
-        game = chess.pgn.read_game(pgn)
-        white_id = game.headers['White']
-        black_id = game.headers['Black']
-
-        if(white_id in node_dict):
-            node_dict[white_id] += 1
-        if(black_id in node_dict):
-            node_dict[black_id] += 1
-
-        sys.stdout.write("\r Processed: {0}/{1}".format(i+1,game_count))
-        sys.stdout.flush()
-    
-    for key in list(node_dict):
-        if(node_dict[key] == 0):
-            node_dict.pop(key, None)
-
-    with open(json_path,'w') as file:
-        file.write(json.dumps(node_dict))
-    end = time.time()
-    time_format(start,end)
-
-def get_node_dict(filename):
-    '''Used to obtain a dictionary of all the nodes in a PGN file
-    '''
-    start = time.time()
-    pgn_folder = 'pgn'
-    txt_folder = 'nodelist'
-    txt_filename = filename[:-4] + '.txt'
-    pgn_path = get_path_file(filename, pgn_folder)
-    txt_path = get_path_file(txt_filename, txt_folder)
-
-    node_dict = {}
-    game_count = get_game_count(filename)
-
-    pgn = open(pgn_path, encoding='utf-8-sig')
-
-    for i in range(0,game_count):
-        game = chess.pgn.read_game(pgn)
-        white_id = game.headers['White']
-        black_id = game.headers['Black']
-        if(white_id not in node_dict):
-            node_dict[white_id] = 1
-        else:
-            node_dict[white_id] += 1
-        if(black_id not in node_dict):
-            node_dict[black_id] = 1
-        else:
-            node_dict[black_id] += 1
-        sys.stdout.write("\r Processed: {0}, Number of Nodes: {1}>".format(i+1,len(node_dict)))
-        sys.stdout.flush()
-    
-    with open(txt_path,'w') as file:
-        file.write(json.dumps(node_dict))
-    end = time.time()
-    time_format(start,end, get_node_dict.__name__)
-    
 # https://stackoverflow.com/questions/55771644/max-consecutive-ones
 def findMaxStreaks(nums):
     slow, fast, glo_max, loc_max = 0, 0, 0, 0
@@ -317,3 +192,130 @@ def findMaxStreaks(nums):
     loc_max = fast - slow        # end check for cases that end with 1
     max_lose_streak = max(loc_max, glo_max)
     return max_win_streak, max_lose_streak
+
+''' CSV headers for Lichess files '''
+# csv_headers = ['id',
+#                'date',
+#                'event', 
+#                'white_id',
+#                'black_id',
+#                'result',
+#                'white_elo',
+#                'white_elo_diff',
+#                'black_elo',
+#                'black_elo_diff',
+#                'eco'
+#                ]
+
+
+# Unused function
+def getGameCount_csv(csv_filename):
+    ''' Returns the game count extracted into the CSV file (without incomplete games)
+    Input: File name of the CSV files processed from datasheets from the website (in the form: lichess_db_standard_rated_201x_mm.csv)''' 
+    if(csv_filename == 'test_db.csv'):
+        return 167
+    elif(csv_filename == 'test_db_cut.csv'):
+        return 139
+    csv_date = getLichessDBDate(csv_filename)
+    game_count_dict_csv = {'2014-01': 691521, '2014-02': 686454, '2014-03': 785091, '2014-04': 799875, '2014-05': 902538, '2014-06': 961247, '2014-07': 1047989, '2014-08': 1012399, '2014-09': 999326, '2014-10': 1110572, '2014-11': 1206909, '2014-12': 1323444}
+    return game_count_dict_csv[csv_date]
+
+def get_csv_game_count_dict(year):
+    def_string = "lichess_db_standard_rated_"
+    game_count_dict = {}
+    for i in ['01','02','03','04','05','06','07','08','09','10','11','12']:
+        file_name = str(year) + '-' + i + '.csv'
+        full_file_name = def_string + file_name
+        file = open(full_file_name)
+        reader = csv.reader(file)
+        game_count_dict[file_name[:-4]] = len(list(reader))
+
+    return game_count_dict
+
+def get_csv_length(csv_filename):
+    ''' Returns number of rows in a csv file
+    Input: File name of CSV file'''
+    file = open(csv_filename)
+    reader = csv.reader(file)
+    lines = len(list(reader))
+
+    return lines
+
+# Don't use these two function. They were originally written to extract data from PGN files
+# but processing CSV files is much, much faster
+def get_node_count(pgn_filename, json_filename):
+    '''Iterates through the nodes in pgn_filename, checks each game for 
+    white_id and black_id to see if they are in node_dict (json_filename)
+    and adds one to their respective dictionary entry if they are present.
+    Ignores otherwise. Finally, removes any elements in the dictionary
+    which have a count of zero
+
+    Input: name of PGN and JSON files with their extensions and the number of games
+    in the PGN file (from Lichess.org)'''
+    start = time.time()
+    dir_path = os.path.dirname(os.path.realpath(__file__))
+    pgn_path = dir_path + '\\' + pgn_filename
+    pgn_name = pgn_filename[26:][:7]
+    json_path = dir_path + '\\' + json_filename[:-4] + '_' + pgn_name +'.txt'
+    node_dict = retrieveNodes(json_filename)
+    game_count = getGameCount(pgn_filename)
+    pgn = open(pgn_path, encoding='utf-8-sig')
+
+    for i in range(0,game_count):
+        game = chess.pgn.read_game(pgn)
+        white_id = game.headers['White']
+        black_id = game.headers['Black']
+
+        if(white_id in node_dict):
+            node_dict[white_id] += 1
+        if(black_id in node_dict):
+            node_dict[black_id] += 1
+
+        sys.stdout.write("\r Processed: {0}/{1}".format(i+1,game_count))
+        sys.stdout.flush()
+    
+    for key in list(node_dict):
+        if(node_dict[key] == 0):
+            node_dict.pop(key, None)
+
+    with open(json_path,'w') as file:
+        file.write(json.dumps(node_dict))
+    end = time.time()
+    timeFormat(start,end)
+
+def get_node_dict(filename):
+    '''Used to obtain a dictionary of all the nodes in a PGN file
+    '''
+    start = time.time()
+    pgn_folder = 'pgn'
+    txt_folder = 'nodelist'
+    txt_filename = filename[:-4] + '.txt'
+    pgn_path = getFilePath(filename, pgn_folder)
+    txt_path = getFilePath(txt_filename, txt_folder)
+
+    node_dict = {}
+    game_count = getGameCount(filename)
+
+    pgn = open(pgn_path, encoding='utf-8-sig')
+
+    for i in range(0,game_count):
+        game = chess.pgn.read_game(pgn)
+        white_id = game.headers['White']
+        black_id = game.headers['Black']
+        if(white_id not in node_dict):
+            node_dict[white_id] = 1
+        else:
+            node_dict[white_id] += 1
+        if(black_id not in node_dict):
+            node_dict[black_id] = 1
+        else:
+            node_dict[black_id] += 1
+        sys.stdout.write("\r Processed: {0}, Number of Nodes: {1}>".format(i+1,len(node_dict)))
+        sys.stdout.flush()
+    
+    with open(txt_path,'w') as file:
+        file.write(json.dumps(node_dict))
+    end = time.time()
+    timeFormat(start,end, get_node_dict.__name__)
+
+
