@@ -149,7 +149,7 @@ def averageTimeBetweenSessions(game_ls):
     
     inactive_days = 0
     inactive_periods = 0
-    active_periods = 0
+    # active_periods = 0
     for d in range(0, len(game_ls)):
         if(d == len(game_ls) - 1):
             if(game_ls[d] == 0):
@@ -161,7 +161,8 @@ def averageTimeBetweenSessions(game_ls):
                 if(game_ls[d+1] != 0):
                     inactive_periods += 1
                 else:
-                    active_periods += 1
+                    # active_periods += 1
+                    pass
             
     if(inactive_periods == 0):
         return 0

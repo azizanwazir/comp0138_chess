@@ -13,16 +13,19 @@ def CreateNodelistSeparate(csv_filename_list, json_filename):
 
     # List of headers for node list
     #row_list = [['id','date','white_id','black_id','result','white_elo','white_elo_diff','black_elo','black_elo_diff']]
-    row_list = [['id', 'player', 'start_elo', ' end_elo', ' max_elo', ' min_elo', ' avg_elo', 'w_below_neg_300', 'w_neg_200_to_299', 'w_neg_100_to_199', 'w_neg_50_to_99', 'w_neg_1_to_49', 'w_zero', 'w_1_to_49', 'w_50_to_99', 'w_100_to_199', 'w_200_to_299', 'w_above_pos_300', 'l_below_neg_300', 'l_neg_200_to_299', 'l_neg_100_to_199', 'l_neg_50_to_99', 'l_neg_1_to_49', 'l_zero', 'l_1_to_49', 'l_50_to_99', 'l_100_to_199', 'l_200_to_299', 'l_above_pos_300', 'd_below_neg_300', 'd_neg_200_to_299', 'd_neg_100_to_199', 'd_neg_50_to_99', 'd_neg_1_to_49', 'd_zero', 'd_1_to_49', 'd_50_to_99', 'd_100_to_199', 'd_200_to_299', 'd_above_pos_300', 'win_count', ' loss_count', ' draw_count', 'win_loss_ratio', ' max_win_streak', ' max_lose_streak', 'max_elo_diff', ' min_elo_diff', ' avg_elo_diff', ' win_higher_count', ' win_lower_count', ' win_even_count', ' loss_higher_count', ' loss_lower_count', ' loss_even_count', ' draw_higher_count', ' draw_lower_count', ' draw_even_count', ' opponent_count', 'game_count', ' avg_daily_games', ' avg_weekly_games', ' avg_days_between_sessions', ' full_day_count']]
+
+
+
+    row_list = [['id', 'player', 'start_elo', ' end_elo', ' max_elo', ' min_elo', ' avg_elo', 'w_below_neg_300', 'w_neg_200_to_299', 'w_neg_100_to_199', 'w_neg_50_to_99', 'w_neg_1_to_49', 'w_zero', 'w_1_to_49', 'w_50_to_99', 'w_100_to_199', 'w_200_to_299', 'w_above_pos_300', 'l_below_neg_300', 'l_neg_200_to_299', 'l_neg_100_to_199', 'l_neg_50_to_99', 'l_neg_1_to_49', 'l_zero', 'l_1_to_49', 'l_50_to_99', 'l_100_to_199', 'l_200_to_299', 'l_above_pos_300', 'd_below_neg_300', 'd_neg_200_to_299', 'd_neg_100_to_199', 'd_neg_50_to_99', 'd_neg_1_to_49', 'd_zero', 'd_1_to_49', 'd_50_to_99', 'd_100_to_199', 'd_200_to_299', 'd_above_pos_300', 'w_Grandmaster', ' w_Master', ' w_ClassA', ' w_ClassB', ' w_ClassC', ' w_ClassD', ' w_Novice', ' l_Grandmaster', ' l_Master', ' l_ClassA', ' l_ClassB', ' l_ClassC', ' l_ClassD', ' l_Novice', ' d_Grandmaster', ' d_Master', ' d_ClassA', ' d_ClassB', ' d_ClassC', ' d_ClassD', ' d_Novice', 'win_count', ' loss_count', ' draw_count', 'win_loss_ratio', ' max_win_streak', ' max_lose_streak', 'max_elo_diff', ' min_elo_diff', ' avg_elo_diff', ' win_higher_count', ' win_lower_count', ' win_even_count', ' loss_higher_count', ' loss_lower_count', ' loss_even_count', ' draw_higher_count', ' draw_lower_count', ' draw_even_count', ' opponent_count', 'game_count', ' avg_daily_games', ' avg_weekly_games', ' avg_days_between_sessions', ' full_day_count']]
 
     # Full list of headers 
     # row_list = [['id', 'player_id', 'win','loss','draw','average_elo','max_elo','min_elo','average_elo_diff','below_neg_300','neg_200_to_300','neg_100_to_200','neg_50_to_100','zero_to_neg_50','zero','zero_to_50','pos_50_to_100','pos_100_to_200','pos_200_to_300','above_pos_300','max_elo_diff','min_elo_diff','game_count']]
 
-    id = 1
     sys.stdout.write("\r \n######################################\n Reading and preprocessing {0} CSV files \n This may take some time. \n--------------------------------------\n".format(len(csv_filename_list)))
 
     # merged_csv = []
     for csv_f in csv_filename_list:
+        id = 1
         sys.stdout.write("\r Retriving data from {0}\n".format(csv_f))
         csv_path = getFilePath(csv_f, 'csv')
         
@@ -117,6 +120,33 @@ def CreateNodelistSeparate(csv_filename_list, json_filename):
             d_200_to_299 = 0
             d_above_pos_300 = 0
 
+            '''New'''
+            # Progress (Absolute)
+            # Number of wins, losses and draws against players of a particular Elo rating (in ranges)
+            w_Grandmaster = 0    # > 2300 
+            w_Master = 0  # 2000 > x > 2300
+            w_ClassA = 0  # 1800 > x > 2000
+            w_ClassB = 0  # 1600 > x > 1800
+            w_ClassC = 0  # 1400 > x > 1600
+            w_ClassD = 0  # 1200 > x > 1400
+            w_Novice = 0 # < 1200 
+            
+            l_Grandmaster = 0    # > 2300 
+            l_Master = 0  # 2000 > x > 2300
+            l_ClassA = 0  # 1800 > x > 2000
+            l_ClassB = 0  # 1600 > x > 1800
+            l_ClassC = 0  # 1400 > x > 1600
+            l_ClassD = 0  # 1200 > x > 1400
+            l_Novice = 0 # < 1200 
+
+            d_Grandmaster = 0    # > 2300 
+            d_Master = 0  # 2000 > x > 2300
+            d_ClassA = 0  # 1800 > x > 2000
+            d_ClassB = 0  # 1600 > x > 1800
+            d_ClassC = 0  # 1400 > x > 1600
+            d_ClassD = 0  # 1200 > x > 1400
+            d_Novice = 0 # < 1200 
+
             # 2nd perspective: Strategy
             # Average, min, max elo (opponent elo - player elo = elo_diff, i.e. negative = lower rated)
             #   --> avg_elo_diff, min_elo_diff, max_elo_diff
@@ -187,6 +217,7 @@ def CreateNodelistSeparate(csv_filename_list, json_filename):
                         # Add player's Elo before the match
                         elo_list.append(game['white_elo'])
                         # Add Elo rating difference 
+                        opp_elo = game['black_elo']
                         elo_difference = game['black_elo'] - game['white_elo']
                         elo_diff_list.append(elo_difference)
 
@@ -202,7 +233,23 @@ def CreateNodelistSeparate(csv_filename_list, json_filename):
                                 win_lower_count += 1
                             else:
                                 win_even_count += 1
-                        
+                            
+                            if(opp_elo >= 2300):
+                                w_Grandmaster += 1
+                            elif(opp_elo >= 2000):
+                                w_Master += 1
+                            elif(opp_elo >= 1800):
+                                w_ClassA += 1
+                            elif(opp_elo >= 1600):
+                                w_ClassB += 1
+                            elif(opp_elo >= 1400):
+                                w_ClassC += 1
+                            elif(opp_elo >= 1200):
+                                w_ClassD += 1
+                            else:
+                                w_Novice += 1
+
+                                
                         # If the game was a draw
                         elif(game['result'] == '1/2-1/2'):
                             # Add '0' indicating a draw
@@ -215,6 +262,21 @@ def CreateNodelistSeparate(csv_filename_list, json_filename):
                                 draw_lower_count += 1
                             else:
                                 draw_even_count += 1
+
+                            if(opp_elo >= 2300):
+                                d_Grandmaster += 1
+                            elif(opp_elo >= 2000):
+                                d_Master += 1
+                            elif(opp_elo >= 1800):
+                                d_ClassA += 1
+                            elif(opp_elo >= 1600):
+                                d_ClassB += 1
+                            elif(opp_elo >= 1400):
+                                d_ClassC += 1
+                            elif(opp_elo >= 1200):
+                                d_ClassD += 1
+                            else:
+                                d_Novice += 1
                         else:
                             # Add '-1' indicating a loss
                             win_loss_list.append(-1)
@@ -226,11 +288,28 @@ def CreateNodelistSeparate(csv_filename_list, json_filename):
                                 loss_lower_count += 1
                             else:
                                 loss_even_count += 1
-                    
+                            
+                            if(opp_elo >= 2300):
+                                l_Grandmaster += 1
+                            elif(opp_elo >= 2000):
+                                l_Master += 1
+                            elif(opp_elo >= 1800):
+                                l_ClassA += 1
+                            elif(opp_elo >= 1600):
+                                l_ClassB += 1
+                            elif(opp_elo >= 1400):
+                                l_ClassC += 1
+                            elif(opp_elo >= 1200):
+                                l_ClassD += 1
+                            else:
+                                l_Novice += 1
+
                     # If player played as black 
                     else:
                         elo_list.append(game['black_elo'])
+                        opp_elo = game['white_elo']
                         elo_difference = game['white_elo'] - game['black_elo']
+
                         elo_diff_list.append(elo_difference)
                         if(game['result'] == '0-1'):
                             win_loss_list.append(1)
@@ -240,6 +319,22 @@ def CreateNodelistSeparate(csv_filename_list, json_filename):
                                 win_lower_count += 1
                             else:
                                 win_even_count += 1
+                            
+                            if(opp_elo >= 2300):
+                                w_Grandmaster += 1
+                            elif(opp_elo >= 2000):
+                                w_Master += 1
+                            elif(opp_elo >= 1800):
+                                w_ClassA += 1
+                            elif(opp_elo >= 1600):
+                                w_ClassB += 1
+                            elif(opp_elo >= 1400):
+                                w_ClassC += 1
+                            elif(opp_elo >= 1200):
+                                w_ClassD += 1
+                            else:
+                                w_Novice += 1
+
                         elif(game['result'] == '1/2-1/2'):
                             win_loss_list.append(0)
                             if(elo_difference > 0):
@@ -248,6 +343,20 @@ def CreateNodelistSeparate(csv_filename_list, json_filename):
                                 draw_lower_count += 1
                             else:
                                 draw_even_count += 1
+                            if(opp_elo >= 2300):
+                                d_Grandmaster += 1
+                            elif(opp_elo >= 2000):
+                                d_Master += 1
+                            elif(opp_elo >= 1800):
+                                d_ClassA += 1
+                            elif(opp_elo >= 1600):
+                                d_ClassB += 1
+                            elif(opp_elo >= 1400):
+                                d_ClassC += 1
+                            elif(opp_elo >= 1200):
+                                d_ClassD += 1
+                            else:
+                                d_Novice += 1
                         else:
                             win_loss_list.append(-1)
                             if(elo_difference > 0):
@@ -256,8 +365,22 @@ def CreateNodelistSeparate(csv_filename_list, json_filename):
                                 loss_lower_count += 1
                             else:
                                 loss_even_count += 1
+                            
+                            if(opp_elo >= 2300):
+                                l_Grandmaster += 1
+                            elif(opp_elo >= 2000):
+                                l_Master += 1
+                            elif(opp_elo >= 1800):
+                                l_ClassA += 1
+                            elif(opp_elo >= 1600):
+                                l_ClassB += 1
+                            elif(opp_elo >= 1400):
+                                l_ClassC += 1
+                            elif(opp_elo >= 1200):
+                                l_ClassD += 1
+                            else:
+                                l_Novice += 1
 
-            assert(len(elo_diff_list) == game_count)
             for i in range(0,len(elo_diff_list)):
                 elo = elo_diff_list[i]
                 result = win_loss_list[i]
@@ -296,6 +419,8 @@ def CreateNodelistSeparate(csv_filename_list, json_filename):
                     else:
                         w_below_neg_300 += 1
                         continue
+
+
 
                 elif(result == -1):
                     # Loss
@@ -379,6 +504,10 @@ def CreateNodelistSeparate(csv_filename_list, json_filename):
             loss_stats = [l_below_neg_300, l_neg_200_to_299, l_neg_100_to_199, l_neg_50_to_99, l_neg_1_to_49, l_zero, l_1_to_49, l_50_to_99, l_100_to_199, l_200_to_299, l_above_pos_300]
             draw_stats = [d_below_neg_300, d_neg_200_to_299, d_neg_100_to_199, d_neg_50_to_99, d_neg_1_to_49, d_zero, d_1_to_49, d_50_to_99, d_100_to_199, d_200_to_299, d_above_pos_300]
             
+            win_stats_absolute = [w_Grandmaster, w_Master, w_ClassA, w_ClassB, w_ClassC, w_ClassD, w_Novice]
+            loss_stats_absolute = [l_Grandmaster, l_Master, l_ClassA, l_ClassB, l_ClassC, l_ClassD, l_Novice]   
+            draw_stats_absolute = [d_Grandmaster, d_Master, d_ClassA, d_ClassB, d_ClassC, d_ClassD, d_Novice]
+
             win_count = sum(win_stats)
             loss_count = sum(loss_stats)
             draw_count = sum(draw_stats)
@@ -388,7 +517,7 @@ def CreateNodelistSeparate(csv_filename_list, json_filename):
                 win_loss_ratio = win_count
             max_win_streak, max_lose_streak = findMaxStreaks(win_loss_list)
 
-            perspective_1 = [start_elo, end_elo, max_elo, min_elo, avg_elo] + win_stats + loss_stats + draw_stats + [win_count, loss_count, draw_count, win_loss_ratio, max_win_streak, max_lose_streak]
+            perspective_1 = [start_elo, end_elo, max_elo, min_elo, avg_elo] + win_stats + loss_stats + draw_stats + win_stats_absolute + loss_stats_absolute + draw_stats_absolute + [win_count, loss_count, draw_count, win_loss_ratio, max_win_streak, max_lose_streak]
 
             # Perspective 2: Strategy
             max_elo_diff = max(elo_diff_list)
@@ -415,14 +544,18 @@ def CreateNodelistSeparate(csv_filename_list, json_filename):
             avg_days_between_sessions = averageTimeBetweenSessions(daily_game_count)
             full_day_count = ".".join([str(i) for i in daily_game_count])
             perspective_3 = [game_count, avg_daily_games, avg_weekly_games, avg_days_between_sessions, full_day_count]
+
             # player_row = [id, player, win_count, loss_count, draw_count, avg_elo, max_elo, min_elo, avg_elo_diff,below_neg_300,neg_200_to_300,neg_100_to_200,neg_50_to_100,zero_to_neg_50,zero,zero_to_50,pos_50_to_100,pos_100_to_200,pos_200_to_300,above_pos_300, max_elo_diff, min_elo_diff, game_count]
             player_row = [id, player] + perspective_1 + perspective_2 + perspective_3
             row_list.append(player_row)
             id += 1
 
+        sys.stdout.write("\r Writing to {0}\n\n".format(nodelist_filename))
         with open(nodelist_path, "w", newline="") as f:
             writer = csv.writer(f)
             writer.writerows(row_list)
+
+        
 
     end = time.time()
     timeFormat(start,end, CreateNodelistSeparate.__name__)
@@ -568,5 +701,7 @@ def create_nodelist_combined_old(csv_filename_list, json_filename):
     timeFormat(start,end, create_nodelist.__name__)
 
 csv_list = ['lichess_db_standard_rated_2014-01_cut.csv', 'lichess_db_standard_rated_2014-02_cut.csv', 'lichess_db_standard_rated_2014-03_cut.csv', 'lichess_db_standard_rated_2014-04_cut.csv', 'lichess_db_standard_rated_2014-05_cut.csv', 'lichess_db_standard_rated_2014-06_cut.csv', 'lichess_db_standard_rated_2014-07_cut.csv', 'lichess_db_standard_rated_2014-08_cut.csv', 'lichess_db_standard_rated_2014-09_cut.csv', 'lichess_db_standard_rated_2014-10_cut.csv', 'lichess_db_standard_rated_2014-11_cut.csv', 'lichess_db_standard_rated_2014-12_cut.csv']
+csv_ls = ['lichess_db_standard_rated_2014-01_cut.csv', 'lichess_db_standard_rated_2014-02_cut.csv']
 #create_nodelist(csv_list, '2014_nodes.txt')
-CreateNodelistSeparate(csv_list, '2014_nodes.txt')
+
+CreateNodelistSeparate(csv_ls, '2014_nodes.txt')
