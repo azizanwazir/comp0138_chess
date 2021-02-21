@@ -11,20 +11,18 @@ def CreateNodelistSeparate(csv_filename_list, json_filename):
     for key in node_dict_zero:
         node_dict_zero[key] = 0
 
-    # List of headers for node list
-    #row_list = [['id','date','white_id','black_id','result','white_elo','white_elo_diff','black_elo','black_elo_diff']]
 
-
-
-    row_list = [['id', 'player', 'start_elo', ' end_elo', ' max_elo', ' min_elo', ' avg_elo', 'w_below_neg_300', 'w_neg_200_to_299', 'w_neg_100_to_199', 'w_neg_50_to_99', 'w_neg_1_to_49', 'w_zero', 'w_1_to_49', 'w_50_to_99', 'w_100_to_199', 'w_200_to_299', 'w_above_pos_300', 'l_below_neg_300', 'l_neg_200_to_299', 'l_neg_100_to_199', 'l_neg_50_to_99', 'l_neg_1_to_49', 'l_zero', 'l_1_to_49', 'l_50_to_99', 'l_100_to_199', 'l_200_to_299', 'l_above_pos_300', 'd_below_neg_300', 'd_neg_200_to_299', 'd_neg_100_to_199', 'd_neg_50_to_99', 'd_neg_1_to_49', 'd_zero', 'd_1_to_49', 'd_50_to_99', 'd_100_to_199', 'd_200_to_299', 'd_above_pos_300', 'w_Grandmaster', ' w_Master', ' w_ClassA', ' w_ClassB', ' w_ClassC', ' w_ClassD', ' w_Novice', ' l_Grandmaster', ' l_Master', ' l_ClassA', ' l_ClassB', ' l_ClassC', ' l_ClassD', ' l_Novice', ' d_Grandmaster', ' d_Master', ' d_ClassA', ' d_ClassB', ' d_ClassC', ' d_ClassD', ' d_Novice', 'win_count', ' loss_count', ' draw_count', 'win_loss_ratio', ' max_win_streak', ' max_lose_streak', 'max_elo_diff', ' min_elo_diff', ' avg_elo_diff', ' win_higher_count', ' win_lower_count', ' win_even_count', ' loss_higher_count', ' loss_lower_count', ' loss_even_count', ' draw_higher_count', ' draw_lower_count', ' draw_even_count', ' opponent_count', 'game_count', ' avg_daily_games', ' avg_weekly_games', ' avg_days_between_sessions', ' full_day_count']]
-
-    # Full list of headers 
-    # row_list = [['id', 'player_id', 'win','loss','draw','average_elo','max_elo','min_elo','average_elo_diff','below_neg_300','neg_200_to_300','neg_100_to_200','neg_50_to_100','zero_to_neg_50','zero','zero_to_50','pos_50_to_100','pos_100_to_200','pos_200_to_300','above_pos_300','max_elo_diff','min_elo_diff','game_count']]
 
     sys.stdout.write("\r \n######################################\n Reading and preprocessing {0} CSV files \n This may take some time. \n--------------------------------------\n".format(len(csv_filename_list)))
 
     # merged_csv = []
     for csv_f in csv_filename_list:
+        # List of headers for node list
+        #row_list = [['id','date','white_id','black_id','result','white_elo','white_elo_diff','black_elo','black_elo_diff']]
+
+
+        row_list = [['id', 'player', 'start_elo', 'end_elo', 'max_elo', 'min_elo', 'avg_elo', 'w_below_neg_300', 'w_neg_200_to_299', 'w_neg_100_to_199', 'w_neg_50_to_99', 'w_neg_1_to_49', 'w_zero', 'w_1_to_49', 'w_50_to_99', 'w_100_to_199', 'w_200_to_299', 'w_above_pos_300', 'l_below_neg_300', 'l_neg_200_to_299', 'l_neg_100_to_199', 'l_neg_50_to_99', 'l_neg_1_to_49', 'l_zero', 'l_1_to_49', 'l_50_to_99', 'l_100_to_199', 'l_200_to_299', 'l_above_pos_300', 'd_below_neg_300', 'd_neg_200_to_299', 'd_neg_100_to_199', 'd_neg_50_to_99', 'd_neg_1_to_49', 'd_zero', 'd_1_to_49', 'd_50_to_99', 'd_100_to_199', 'd_200_to_299', 'd_above_pos_300', 'w_Grandmaster', 'w_Master',  'w_ClassA',  'w_ClassB',  'w_ClassC',  'w_ClassD',  'w_Novice',  'l_Grandmaster',  'l_Master', 'l_ClassA', 'l_ClassB', 'l_ClassC', 'l_ClassD', 'l_Novice',  'd_Grandmaster',  'd_Master',  'd_ClassA',  'd_ClassB',  'd_ClassC',  'd_ClassD',  'd_Novice', 'win_count',  'loss_count',  'draw_count', 'win_loss_ratio',  'max_win_streak',  'max_lose_streak', 'max_elo_diff',  'min_elo_diff',  'avg_elo_diff',  'win_higher_count',  'win_lower_count',  'win_even_count',  'loss_higher_count',  'loss_lower_count',  'loss_even_count',  'draw_higher_count',  'draw_lower_count',  'draw_even_count',  'opponent_count', 'game_count',  'avg_daily_games',  'avg_weekly_games',  'avg_days_between_sessions',  'full_day_count']]
+
         id = 1
         sys.stdout.write("\r Retriving data from {0}\n".format(csv_f))
         csv_path = getFilePath(csv_f, 'csv')
@@ -704,4 +702,5 @@ csv_list = ['lichess_db_standard_rated_2014-01_cut.csv', 'lichess_db_standard_ra
 csv_ls = ['lichess_db_standard_rated_2014-01_cut.csv', 'lichess_db_standard_rated_2014-02_cut.csv']
 #create_nodelist(csv_list, '2014_nodes.txt')
 
-CreateNodelistSeparate(csv_ls, '2014_nodes.txt')
+CreateNodelistSeparate(csv_list, '2014_nodes.txt')
+
