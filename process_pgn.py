@@ -251,18 +251,19 @@ def getNodeCount(csv_filename, json_filename):
 # ConvertPGNtoCSV('test_db.pgn')
 # getNodeDict('test_db.csv')
 
-# ConvertPGNtoCSV('lichess_db_standard_rated_2014-01.pgn')
-# ConvertPGNtoCSV('lichess_db_standard_rated_2014-02.pgn')
-# ConvertPGNtoCSV('lichess_db_standard_rated_2014-03.pgn')
-# ConvertPGNtoCSV('lichess_db_standard_rated_2014-04.pgn')
-# ConvertPGNtoCSV('lichess_db_standard_rated_2014-05.pgn')
-# ConvertPGNtoCSV('lichess_db_standard_rated_2014-06.pgn')
-# ConvertPGNtoCSV('lichess_db_standard_rated_2014-07.pgn')
-# ConvertPGNtoCSV('lichess_db_standard_rated_2014-08.pgn')
-# ConvertPGNtoCSV('lichess_db_standard_rated_2014-09.pgn')
-# ConvertPGNtoCSV('lichess_db_standard_rated_2014-10.pgn')
-# ConvertPGNtoCSV('lichess_db_standard_rated_2014-11.pgn')
-# ConvertPGNtoCSV('lichess_db_standard_rated_2014-12.pgn')
+# ConvertPGNtoCSV('lichess_db_standard_rated_2015-01.pgn')
+# ConvertPGNtoCSV('lichess_db_standard_rated_2015-02.pgn')
+# ConvertPGNtoCSV('lichess_db_standard_rated_2015-03.pgn')
+
+# ConvertPGNtoCSV('lichess_db_standard_rated_2015-04.pgn')
+# ConvertPGNtoCSV('lichess_db_standard_rated_2015-05.pgn')
+# ConvertPGNtoCSV('lichess_db_standard_rated_2015-06.pgn')
+# ConvertPGNtoCSV('lichess_db_standard_rated_2015-07.pgn')
+# ConvertPGNtoCSV('lichess_db_standard_rated_2015-08.pgn')
+# ConvertPGNtoCSV('lichess_db_standard_rated_2015-09.pgn')
+# ConvertPGNtoCSV('lichess_db_standard_rated_2015-10.pgn')
+# ConvertPGNtoCSV('lichess_db_standard_rated_2015-11.pgn')
+# ConvertPGNtoCSV('lichess_db_standard_rated_2015-12.pgn')
 
 # getNodeCount('lichess_db_standard_rated_2014-01.csv', 'lichess_db_standard_rated_2014-12_nodes_zeros.txt')
 # getNodeCount('lichess_db_standard_rated_2014-02.csv', 'lichess_db_standard_rated_2014-12_nodes_zeros.txt')
@@ -289,3 +290,7 @@ def getNodeCount(csv_filename, json_filename):
 # year_list = ['lichess_db_standard_rated_2014-04.csv', 'lichess_db_standard_rated_2014-05.csv', 'lichess_db_standard_rated_2014-06.csv']
 # year_list = ['lichess_db_standard_rated_2014-07.csv', 'lichess_db_standard_rated_2014-08.csv', 'lichess_db_standard_rated_2014-09.csv']
 # year_list = ['lichess_db_standard_rated_2014-10.csv', 'lichess_db_standard_rated_2014-11.csv', 'lichess_db_standard_rated_2014-12.csv']
+
+SelectedNodesOnly(['lichess_db_standard_rated_2015-01.csv'], 'lichess_db_standard_rated_2014-12_nodes.txt')
+
+# print(get_csv_length('csv\lichess_db_standard_rated_2015-01.csv'))
