@@ -4,6 +4,7 @@ import os
 import json
 import sys
 import time
+import random
 
 class DirectoryNotFound(Exception):
     pass
@@ -170,6 +171,67 @@ def averageTimeBetweenSessions(game_ls):
     else:
         return inactive_days/inactive_periods
 
+def ActiveInactiveDaysAndPeriods(game_ls):
+    # Find total number of zeros in the list (days on which player played no games: days of inactivity) and divide by number of periods of inactivity (consecutive days of inactivity)
+    # i.e. [0, 1, 1, 0, 0, 1, 1, 0] --> 4 days of inactivity, 3 periods of activity
+    # return 4/3 = 1.34 days between sessions on average
+
+    # TODO: Ignore leading and trailing zeros
+    # i.e. [0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0] gives average 0 days between sessions instead of 4 (8 inactive days/2 inactive periods)
+    
+    inactive_days = 0
+    inactive_periods = 0
+    active_days = 0
+    active_periods = 0
+    for d in range(0, len(game_ls)):
+        if(d == len(game_ls) - 1):
+            if(game_ls[d] == 0):
+                inactive_days += 1
+                inactive_periods += 1
+            else:
+                active_days += 1
+                active_periods += 1
+        else:
+            if(game_ls[d] == 0):
+                inactive_days += 1
+                if(game_ls[d+1] != 0):
+                    inactive_periods += 1
+            else:
+                active_days += 1
+                if(game_ls[d+1] == 0):
+                    active_periods += 1
+
+                   
+                
+    return active_days, inactive_days, active_periods, inactive_periods
+
+def averageSessionDays(game_ls):
+    # Find total number of zeros in the list (days on which player played no games: days of inactivity) and divide by number of periods of inactivity (consecutive days of inactivity)
+    # i.e. [0, 1, 1, 0, 0, 1, 1, 0] --> 4 days of inactivity, 3 periods of activity
+    # return 4/3 = 1.34 days between sessions on average
+
+    # TODO: Ignore leading and trailing zeros
+    # i.e. [0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0] gives average 0 days between sessions instead of 4 (8 inactive days/2 inactive periods)
+    
+    active_days = 0
+    active_periods = 0
+
+    for d in range(0, len(game_ls)):
+        if(d == len(game_ls) - 1):
+            if(game_ls[d] != 0):
+                active_days += 1
+                active_periods += 1
+        else:
+            if(game_ls[d] != 0):
+                active_days += 1
+                if(game_ls[d+1] == 0):
+                    active_periods += 1
+                
+    if(active_periods == 0):
+        return 0
+    else:
+        return active_days/active_periods
+
 # https://stackoverflow.com/questions/55771644/max-consecutive-ones
 def findMaxStreaks(nums):
     slow, fast, glo_max, loc_max = 0, 0, 0, 0
@@ -195,129 +257,241 @@ def findMaxStreaks(nums):
     max_lose_streak = max(loc_max, glo_max)
     return max_win_streak, max_lose_streak
 
-''' CSV headers for Lichess files '''
-# csv_headers = ['id',
-#                'date',
-#                'event', 
-#                'white_id',
-#                'black_id',
-#                'result',
-#                'white_elo',
-#                'white_elo_diff',
-#                'black_elo',
-#                'black_elo_diff',
-#                'eco'
-#                ]
 
+# Obtain a dictionary of unique nodes in a CSV file
+def getNodeDict(csv_filename):
+    '''Used to obtain a dictionary of all the nodes in a PGN file and '''
+    start = time.time()
+    node_dict = {}
 
-# Unused function
-def getGameCount_csv(csv_filename):
-    ''' Returns the game count extracted into the CSV file (without incomplete games)
-    Input: File name of the CSV files processed from datasheets from the website (in the form: lichess_db_standard_rated_201x_mm.csv)''' 
-    if(csv_filename == 'test_db.csv'):
-        return 167
-    elif(csv_filename == 'test_db_cut.csv'):
-        return 139
-    csv_date = getLichessDBDate(csv_filename)
-    game_count_dict_csv = {'2014-01': 691521, '2014-02': 686454, '2014-03': 785091, '2014-04': 799875, '2014-05': 902538, '2014-06': 961247, '2014-07': 1047989, '2014-08': 1012399, '2014-09': 999326, '2014-10': 1110572, '2014-11': 1206909, '2014-12': 1323444}
-    return game_count_dict_csv[csv_date]
+    # Get path names
+    csv_folder = 'csv'
+    txt_folder = 'nodelists'
+    txt_filename = csv_filename[:-4] + '_cut.txt'
+    csv_path = getFilePath(csv_filename, csv_folder)
+    txt_path = getFilePath(txt_filename, txt_folder)
 
-def get_csv_game_count_dict(year):
-    def_string = "lichess_db_standard_rated_"
-    game_count_dict = {}
-    for i in ['01','02','03','04','05','06','07','08','09','10','11','12']:
-        file_name = str(year) + '-' + i + '.csv'
-        full_file_name = def_string + file_name
-        file = open(full_file_name)
-        reader = csv.reader(file)
-        game_count_dict[file_name[:-4]] = len(list(reader))
+    i = 0
+    with open(csv_path, mode='r') as csv_file:
+        csv_reader = csv.DictReader(csv_file, delimiter=',')
+        for row in csv_reader:
+            white_id = row["white_id"]
+            black_id = row["black_id"]
+            if(white_id not in node_dict):
+                node_dict[white_id] = 1
+            else:
+                node_dict[white_id] += 1
+            if(black_id not in node_dict):
+                node_dict[black_id] = 1
+            else:
+                node_dict[black_id] += 1
+            sys.stdout.write("\r Processed: {0}, Number of Nodes: {1}>".format(i+1,len(node_dict)))
+            sys.stdout.flush()
+            i += 1
 
-    return game_count_dict
+    with open(txt_path,'w') as file:
+        file.write(json.dumps(node_dict))
+    end = time.time()
+    timeFormat(start,end, getNodeDict.__name__)
 
-def get_csv_length(csv_filename):
-    ''' Returns number of rows in a csv file
-    Input: File name of CSV file'''
-    file = open(csv_filename)
-    reader = csv.reader(file)
-    lines = len(list(reader))
-
-    return lines
-
-# Don't use these two function. They were originally written to extract data from PGN files
-# but processing CSV files is much, much faster
-def get_node_count(pgn_filename, json_filename):
-    '''Iterates through the nodes in pgn_filename, checks each game for 
+# Obtain the number of games each player has played and removes players with no games played for the month
+def getNodeCount(csv_filename, json_filename):
+    '''Iterates through the nodes in csv_filename, checks each game for 
     white_id and black_id to see if they are in node_dict (json_filename)
     and adds one to their respective dictionary entry if they are present.
     Ignores otherwise. Finally, removes any elements in the dictionary
     which have a count of zero
 
-    Input: name of PGN and JSON files with their extensions and the number of games
-    in the PGN file (from Lichess.org)'''
+    Input: name of CSV and JSON files with their extensions and the number of games
+    in the CSV file (processed after download from Lichess.org)'''
     start = time.time()
-    dir_path = os.path.dirname(os.path.realpath(__file__))
-    pgn_path = dir_path + '\\' + pgn_filename
-    pgn_name = pgn_filename[26:][:7]
-    json_path = dir_path + '\\' + json_filename[:-4] + '_' + pgn_name +'.txt'
-    node_dict = retrieveNodes(json_filename)
-    game_count = getGameCount(pgn_filename)
-    pgn = open(pgn_path, encoding='utf-8-sig')
 
-    for i in range(0,game_count):
-        game = chess.pgn.read_game(pgn)
-        white_id = game.headers['White']
-        black_id = game.headers['Black']
+    # Get path names
+    csv_folder = 'csv'
+    json_folder = 'nodelists'
+    # txt_filename = csv_filename[:-4] + '.txt'
+    csv_path = getFilePath(csv_filename, csv_folder)
+    # txt_path = getFilePath(txt_filename, json_folder)
+    json_path = getFilePath(json_filename, json_folder)
+    setZero(json_path)
+    node_dict = retrieveNodes(json_path)
+    game_count = getGameCount(csv_filename)
 
-        if(white_id in node_dict):
-            node_dict[white_id] += 1
-        if(black_id in node_dict):
-            node_dict[black_id] += 1
-
-        sys.stdout.write("\r Processed: {0}/{1}".format(i+1,game_count))
-        sys.stdout.flush()
+    with open(csv_path, mode='r') as csv_file:
+        csv_reader = csv.DictReader(csv_file, delimiter=',')
+        i = 0
+        for row in csv_reader:
+            white_id = row["white_id"]
+            black_id = row["black_id"]
+            if(white_id in node_dict):
+                node_dict[white_id] += 1
+            if(black_id in node_dict):
+                node_dict[black_id] += 1
+            sys.stdout.write("\r Processed: {0}/{1}>".format(i+1,game_count))
+            sys.stdout.flush()
+            i += 1
     
+    i = 0
+    og_len = len(node_dict)
     for key in list(node_dict):
         if(node_dict[key] == 0):
             node_dict.pop(key, None)
+        else:
+            i += 1
 
+    sys.stdout.write("\n\n\r {0} nodes deleted from an original count of {1}".format(og_len - len(node_dict), og_len))
     with open(json_path,'w') as file:
         file.write(json.dumps(node_dict))
     end = time.time()
-    timeFormat(start,end)
+    timeFormat(start,end, getNodeCount.__name__)
 
-def get_node_dict(filename):
-    '''Used to obtain a dictionary of all the nodes in a PGN file
-    '''
-    start = time.time()
-    pgn_folder = 'pgn'
-    txt_folder = 'nodelist'
-    txt_filename = filename[:-4] + '.txt'
-    pgn_path = getFilePath(filename, pgn_folder)
-    txt_path = getFilePath(txt_filename, txt_folder)
-
-    node_dict = {}
-    game_count = getGameCount(filename)
-
-    pgn = open(pgn_path, encoding='utf-8-sig')
-
-    for i in range(0,game_count):
-        game = chess.pgn.read_game(pgn)
-        white_id = game.headers['White']
-        black_id = game.headers['Black']
-        if(white_id not in node_dict):
-            node_dict[white_id] = 1
-        else:
-            node_dict[white_id] += 1
-        if(black_id not in node_dict):
-            node_dict[black_id] = 1
-        else:
-            node_dict[black_id] += 1
-        sys.stdout.write("\r Processed: {0}, Number of Nodes: {1}>".format(i+1,len(node_dict)))
-        sys.stdout.flush()
+# Assigns a numerical ID to each user
+# DO NOT PUBLISH
+# REMOVE SEED
+def anonymiseJSON(json_filename):
+    node_dict = retrieveNodes(getFilePath(json_filename, 'nodelists'))
+    new_dict = dict()
+    i = 0
+    index_list = [x for x in range(1, len(node_dict) + 1)]
     
-    with open(txt_path,'w') as file:
-        file.write(json.dumps(node_dict))
-    end = time.time()
-    timeFormat(start,end, get_node_dict.__name__)
+    random.Random(10).shuffle(index_list)
+    for key in node_dict:
+        new_dict[key] = index_list[i]
+        i += 1
 
+    txt_folder = 'nodelists'
+    txt_filename = 'id_nodelist_new.txt'
+    txt_path = getFilePath(txt_filename, txt_folder)
+    with open(txt_path,'w') as file:
+        file.write(json.dumps(new_dict))
+
+def renameNodes(csv_file, nodes):
+    start = time.time()
+    node_dict = retrieveNodes(getFilePath(nodes, 'nodelists'))
+    # Get path names
+    csv_folder = 'csv'
+    csv_path = getFilePath(csv_file, csv_folder)
+    row_list = []
+
+    i = 1
+    with open(csv_path, mode='r') as csv_file:
+        csv_reader = csv.DictReader(csv_file, delimiter=',')
+        for row in csv_reader:
+            white_id = row["white_id"]
+            black_id = row["black_id"]
+            if(white_id not in node_dict and black_id not in node_dict):
+                continue
+            if(white_id in node_dict):
+                row["white_id"] = node_dict[white_id]
+            else:
+                row["white_id"] = "stranger"
+            if(black_id in node_dict):
+                row["black_id"] = node_dict[black_id]
+            else:
+                row["black_id"] = "stranger"
+            row_list.append(row)
+
+            sys.stdout.write("\r Added: {0}>".format(len(row_list)))
+            sys.stdout.flush()
+
+    with open(csv_path, "w", newline="") as f:
+        # Abridged list of headers
+        writer = csv.DictWriter(f, ['id','date', 'white_id','black_id','result','white_rating','black_rating'], extrasaction='ignore')
+        writer.writeheader()
+        writer.writerows(row_list)
+
+    end = time.time()
+    timeFormat(start,end, getNodeDict.__name__)
+
+def renameHeaders(csv_file, rename=False, json=None):
+    
+    # Current headers of the CSV file
+    original_headers = ['id','date', 'white_id','black_id','result','white_elo','black_elo']
+    
+    # Headers to change to
+    final_headers = {'id': 'id', 'date': 'date', 'white_id': 'white_id', 'black_id': 'black_id', 'result': 'result', 'white_elo': 'white_rating', 'black_elo': 'black_rating'}
+
+    row_list = []
+    csv_path = getFilePath(csv_file, 'csv')
+
+    if(rename == False):
+        with open(csv_path, mode='r') as csv_file:
+            csv_reader = csv.DictReader(csv_file, delimiter=',')
+            i = 0
+            for row in csv_reader:
+                row_list.append(row)
+                sys.stdout.write("\r Added {0} lines.".format(i))
+                i += 1
+    else:
+        node_dict = retrieveNodes(getFilePath(json, 'nodelists'))
+        with open(csv_path, mode='r') as csv_file:
+            csv_reader = csv.DictReader(csv_file, delimiter=',')
+            for row in csv_reader:
+                white_id = row["white_id"]
+                black_id = row["black_id"]
+                if(white_id in node_dict):
+                    row["white_id"] = node_dict[white_id]
+                else:
+                    row["white_id"] = "stranger"
+                if(black_id in node_dict):
+                    row["black_id"] = node_dict[black_id]
+                else:
+                    row["black_id"] = "stranger"
+                row_list.append(row)
+
+                sys.stdout.write("\r Added: {0}>".format(len(row_list)))
+                sys.stdout.flush()
+
+    with open(csv_path, "w", newline="") as f:
+        writer = csv.DictWriter(f, original_headers, extrasaction='ignore')
+        writer.writerow(final_headers)
+        writer.writerows(row_list)
+
+
+def anonList(json_f):
+    node_dict = retrieveNodes(getFilePath(json_f, 'nodelists'))
+    new_dict = dict()
+
+    for key in node_dict:
+        new_dict[node_dict[key]] = node_dict[key]
+
+    txt_folder = 'nodelists'
+    txt_filename = 'id_nodelist.txt'
+    txt_path = getFilePath(txt_filename, txt_folder)
+    with open(txt_path,'w') as file:
+        file.write(json.dumps(new_dict))
+
+def removeNodes(full, cut):
+    full_dict = retrieveNodes(getFilePath(full, 'nodelists'))
+    cut_dict = retrieveNodes(getFilePath(cut, 'nodelists'))
+    new_dict = dict()
+    for key in cut_dict:
+        new_dict[key] = full_dict[key]
+
+    txt_folder = 'nodelists'
+    txt_filename = 'cut_id_nodelist.txt'
+    txt_path = getFilePath(txt_filename, txt_folder)
+    with open(txt_path,'w') as file:
+        file.write(json.dumps(new_dict))
+
+
+# renameHeaders('lichess_db_standard_rated_2014-12_cut.csv')
+# renameHeaders('lichess_db_standard_rated_2014-11_cut.csv')
+# renameHeaders('lichess_db_standard_rated_2014-10_cut.csv')
+# renameHeaders('lichess_db_standard_rated_2014-09_cut.csv')
+# renameHeaders('lichess_db_standard_rated_2014-08_cut.csv')
+# renameHeaders('lichess_db_standard_rated_2014-07_cut.csv')
+# renameHeaders('lichess_db_standard_rated_2014-06_cut.csv')
+# renameHeaders('lichess_db_standard_rated_2014-05_cut.csv')
+# renameHeaders('lichess_db_standard_rated_2014-04_cut.csv')
+# renameHeaders('lichess_db_standard_rated_2014-01_cut.csv')
+
+# renameNodes('lichess_db_standard_rated_2014-01_cut.csv', 'player_nodelist_map.txt')
+
+# renameHeaders('lichess_db_standard_rated_2014-01_cut - Copy.csv', True, 'id_nodelist.txt')
+# multiple(['lichess_db_standard_rated_2015-01_cut.csv','lichess_db_standard_rated_2015-02_cut.csv','lichess_db_standard_rated_2015-03_cut.csv', 'lichess_db_standard_rated_2015-04_cut.csv'])
+# multiple(['lichess_db_standard_rated_2015-05_cut.csv','lichess_db_standard_rated_2015-06_cut.csv', 'lichess_db_standard_rated_2015-07_cut.csv'])
+# multiple(['lichess_db_standard_rated_2015-08_cut.csv','lichess_db_standard_rated_2015-09_cut.csv', 'lichess_db_standard_rated_2015-10_cut.csv'])
+# multiple(['lichess_db_standard_rated_2015-11_cut.csv','lichess_db_standard_rated_2015-12_cut.csv'])
+# removeNodes('id_nodelist.txt', 'id_nodelist_new.txt')
 

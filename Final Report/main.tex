@@ -1,0 +1,182 @@
+\documentclass[a4paper]{article}
+\usepackage{setspace}
+%\usepackage{subfigure}
+
+\pagestyle{plain}
+\usepackage{amssymb,graphicx,color}
+\usepackage{amsfonts}
+\usepackage{latexsym}
+\usepackage{amsmath}
+\usepackage[a4paper, margin = 3cm, bottom = 2.5cm]{geometry}
+\usepackage[title]{appendix}
+
+\newtheorem{theorem}{THEOREM}
+\newtheorem{lemma}[theorem]{LEMMA}
+\newtheorem{corollary}[theorem]{COROLLARY}
+\newtheorem{proposition}[theorem]{PROPOSITION}
+\newtheorem{remark}[theorem]{REMARK}
+\newtheorem{definition}[theorem]{DEFINITION}
+\newtheorem{fact}[theorem]{FACT}
+
+\newtheorem{problem}[theorem]{PROBLEM}
+\newtheorem{exercise}[theorem]{EXERCISE}
+\def \set#1{\{#1\} }
+
+\newenvironment{proof}{
+PROOF:
+\begin{quotation}}{
+$\Box$ \end{quotation}}
+
+\newcommand{\nats}{\mbox{\( \mathbb N \)}}
+\newcommand{\rat}{\mbox{\(\mathbb Q\)}}
+\newcommand{\rats}{\mbox{\(\mathbb Q\)}}
+\newcommand{\reals}{\mbox{\(\mathbb R\)}}
+\newcommand{\ints}{\mbox{\(\mathbb Z\)}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+%\title{{\vspace{-14em} \includegraphics[scale=0.4]{images/ucl_logo.png}}\\
+%{{\Huge Chess Player Styles and Types in Lichess.org }}\\
+%{\large Subtitle}\\
+%}
+%\date{Submission date: 01 01 2021}
+%\author{Nur Azizan bin Wazir\thanks{
+%{\bf Disclaimer:}
+%This report is submitted as part requirement for the MEng Computer Science course at UCL. It is
+%substantially the result of my own work except where explicitly indicated in the text.
+%\emph{Either:} The report may be freely copied and distributed provided the source is explicitly acknowledged
+%\newline  %% \\ messes it up
+%\emph{Or:}\newline
+%The report will be distributed to the internal and external examiners, but thereafter may not be copied or distributed except with permission from the author.}
+%\\ \\
+%MEng Computer Science\\ \\
+%Dr. Shi Zhou}
+
+\title{Chess Player Styles and Types in Lichess.org}
+\author{Nur Azizan bin Wazir}
+
+\makeatletter
+\def\@maketitle{
+{\vspace{-14em} \includegraphics[scale=0.4]{images/ucl_logo.png}}\\
+\begin{center}
+{\huge \@title}\\[4ex]
+{\Large \@author}\\[4ex]
+
+{\large MEng Computer Science}\\[4ex]
+{\large Supervised by: Dr. Shi Zhou}
+\end{center}}
+\makeatother
+
+\begin{document}
+
+\maketitle
+\newpage
+
+\begin{abstract}
+Summarise your report concisely.
+\end{abstract}
+\clearpage
+\tableofcontents
+\clearpage
+\setcounter{page}{1}
+
+\section{Introduction}
+
+\subsection{Problem Statement}
+%Chess is an age old game of strategy and patterns. 64 squares and 32 pieces 
+
+With the current widespread accessibility of online chess, it is easier than ever for players to obtain and track a chess rating of their own. Through popular platforms such as Chess.com and Lichess.org, players can play against others around the world and work their way up towards becoming a chess grandmaster. 
+
+However, players will inevitably progress at different rates from each other and may plateau at different levels too. There are many factors that may contribute to a player's progress. I categorised these factors into two types - individual factors and experience-based factors. Individual factors are factors that are influenced solely by the player's own actions, such as studying their own and other players' games or solving chess puzzles. Experience-based factors are factors that involve other players, such as the frequency and volume of games played or the proportion of higher and lower rated players played against. Studying these factors and their influence on a player's progress could help develop a `winning formula' for achieving progress, which could also facilitate strategy recommendations for players at various levels to achieve their goals. It could also potentially demystify and explain plateaus in a player's progression within chess and possibly other games as well.
+
+While it would be very interesting to study the effects of these two categories of factors on a player's progress in tandem, collecting data on individual factors would require much more time and resources than possible for this study. Therefore, the focus of my research was on experience-based factors, without consideration of individual factors, and their influence on a player's progress. I used publicly available data on players on the online chess platform Lichess.org to quantify these experience-based factors to study a possible correlation between experience-based factors alone and progress.
+
+\subsubsection{Project Aims and Goals}
+%Basically take from Project Plan. Categorise players into types and explore correlation between types and progress
+My research aims to categorise players into different styles, based on experience-based factors, and to explore if there are any direct correlations between these factors and their progress. If such a correlation exists, it would then be possible to explore the degree and speed of progress between different styles and what is the best strategy to adopt for a player hoping to achieve a particular progress goal. This could serve as the basis of program recommendations and building for chess players looking to improve their rating. However, if a correlation does not exist, then it would imply that experience-based factors alone, or changes thereof, are not sufficient to reliably predict a user's progress. This would be an interesting result as many online forums and high-rated players offering advice often suggest playing more games, playing opponents rated higher than themselves and other experience-based factors when offering advice on how to progress, however if there is no significant correlation between experience-based factors (independently from individual factors) and progress, the advice given may need to be revisited to determine what actually drives a player's progress.
+
+% CAVEAT: experience-based and individual factors can be measured differently, but cannot be assumed to be independent
+
+\subsection{Project Overview}
+%Describe the three stages of this project. Briefly cover the techniques or algorithms used for each section
+My research is divided into two/three stages. The first stage covers player classification to divide users into different categories or styles based on their experience-based factors. This will serve as the basis of exploring possible correlation between these factors and progress. The second stage explores the 
+
+\subsection{Report Overview}
+Intro, background, 3 stages, potential work, testing, conclusions
+
+\section{Background Information and Related Work: Context?}
+\subsection{Literature Survey}
+Literature survey split into 3 parts: chess and general sports rating systems, player type classification, and LDA and other techniques for classification
+
+\subsection{Player type classification}
+Stuff like the 2012 work on classifying players using LDA (snakes and rogue trooper)
+
+\subsection{Rating and Ranking Systems}
+
+\subsubsection{Rating v.s. Ranking}
+
+\subsubsection{Earned v.s. Predictive}
+
+\subsubsection{Chess rating system}
+Elo, Glicko, Glicko-2.
+
+Also compare briefly vs other rating systems, e.g. tennis and snooker
+
+\subsection{LDA and other classification techniques}
+LDA, PCA, K-Means. Dimensional reduction
+
+\section{Stage 1: Data processing and player classification}
+\begin{enumerate}
+\item{User classification \\
+	 \begin{enumerate}
+		\item{Perspective 1: Who is making progress}
+		\item{Perspective 2: What strategies are being used}
+		\item{Perspective 3: How active are they}	
+	\end{enumerate}}
+\item{User Distributions}
+\item{User profile classification}
+
+\end{enumerate}
+
+
+\subsection{Requirements and Analysis}
+Issues and practicality (mention complexity of Glicko-2)
+Dataset from Lichess
+Analyse individual player from Lichess and suggest recommendations
+
+Data analysis and presentation
+
+\subsection{Design}
+
+
+\subsection{Implementation}
+
+
+\section{Stage 2: Testing correlation between player classification and progress}
+Define a problem statement/ or research question regarding the potential connection between a player's type or classification and their progress
+
+\section{Stage 3: Testing findings on other platforms and sports}
+Test on other chess platforms with different rating systems or sports like tennis (with tennis Elo)
+
+
+\section{Potential value of the project}
+How the project can be applicable in predictive rating and suggesting action plans for specific types of players
+
+
+\section{Conclusions}
+\subsection{Achievements}
+Summarise the achievements to confirm the project goals have been met.
+
+\subsection{Evaluation}
+Evaluation of the work (this may be in a separate chapter if there is substantial evaluation).
+
+\subsection{Future Work}
+How the project might be continued, but don't give the impression you ran out of time!
+
+\begin{appendices}
+\section{Project Plan}
+
+\section{Code Listing}
+\end{appendices}
+\end{document}
