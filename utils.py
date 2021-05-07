@@ -351,10 +351,11 @@ def getNodeCount(csv_filename, json_filename):
 def anonymiseJSON(json_filename):
     node_dict = retrieveNodes(getFilePath(json_filename, 'nodelists'))
     new_dict = dict()
+    seed = 10 # Remove
     i = 0
     index_list = [x for x in range(1, len(node_dict) + 1)]
     
-    random.Random(10).shuffle(index_list)
+    random.Random(seed).shuffle(index_list)
     for key in node_dict:
         new_dict[key] = index_list[i]
         i += 1
